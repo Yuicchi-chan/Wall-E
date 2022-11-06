@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'eclipse'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+}
+
+group 'org.yuicchi'
+version '1.0-SNAPSHOT'
+
+shadowJar {
+    archiveBaseName.set('WallE')
+    archiveVersion.set('0.01')
+    zip64 true
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class' : 'Startup'
+        )
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.fazecast:jSerialComm:2.9.2'
+    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.0.0-alpha-6'
+    implementation 'ch.qos.logback:logback-classic:1.4.4'
+
+}
+
+test {
+    useJUnitPlatform()
+}
