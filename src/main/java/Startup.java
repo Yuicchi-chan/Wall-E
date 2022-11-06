@@ -1,27 +1,35 @@
 import com.fazecast.jSerialComm.SerialPort;
-import javafx.scene.paint.Stop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.crypto.Data;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 public class Startup {
 
     private static final Logger log = LoggerFactory.getLogger(Startup.class);
+    private static SerialPort port = null;
 
     public static void main(String[] args) {
-        SerialPort port;
         try{
 
-            port = Startup.getArduino();
+            Startup.getArduino();
+            // Wait 5 seconds for initialization
+            Thread.sleep(5 * 1000);
+
+            log.info(String.valueOf(Startup.connectArduino()));
 
         }catch (Exception e){
             log.error(e.getMessage());
         }
+
     }
 
 
-    static SerialPort getArduino() throws Exception {
+    static void getArduino() {
+
+        if(port.isOpen())
+           return;
 
         int BaudRate = 9600;
         int DataBits = 8;
@@ -37,10 +45,9 @@ public class Startup {
 
                 log.info("Arduino Found");
                 port.setComPortParameters(BaudRate, DataBits, StopBits, Parity);
-                port.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING,1000,0)
+                port.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING,1000,0);
                 if(port.openPort()){
-
-                    return port;
+                    Startup.port = port;
                 }else{
                     throw new RuntimeException("No response from Arduino, Port could not be opened!");
                 }
@@ -49,8 +56,18 @@ public class Startup {
         throw new NullPointerException("No Arduino Found");
     }
 
-    static boolean ConnectArduino(){
-        return true;
+    static boolean connectArduino() {
+        // Create a buffer
+        byte[] readBuffer= new byte[1024];
+
+        // Send a SYN request
+        byte[] WriteBuffer = "SYN".getBytes(StandardCharsets.UTF_8);
+        port.writeBytes(WriteBuffer, WriteBuffer.length);
+
+
+        port.readBytes(readBuffer, 1024);
+        String Message = new String(readBuffer, StandardCharsets.UTF_8);
+        return Message.equals("ACK");
     }
 
 }
