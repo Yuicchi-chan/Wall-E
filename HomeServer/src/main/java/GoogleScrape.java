@@ -1,4 +1,3 @@
-package Processes;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -8,27 +7,70 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.table.TableRowSorter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.time.Duration;
 import java.util.Scanner;
+import java.util.logging.Level;
 
 public class GoogleScrape {
     static WebDriver driver;
     WebElement SendBox;
     private static final Logger log = LoggerFactory.getLogger(GoogleScrape.class);
-
+    static ServerSocket serverSocket;
     static int j = 0;
+
+
     public static void main(String[] args){
         System.setProperty("webdriver.chrome.driver",
-                "E:\\Bots\\Yuudachi\\Python Scripts_and_Executables\\chromedriver.exe");
+                "E:\\Python Projects & files\\executables\\chromedriver.exe");
         driver = new ChromeDriver();
 
         GoogleScrape googleScrape = new GoogleScrape();
-        Scanner Input = new Scanner(System.in);
 
-        while(true)
-            googleScrape.Scrape(Input.nextLine());
+        googleScrape.socketInitializer(50000);
+
+        // Listen for a new module connection all the time.
+        Thread Listener = new Thread(() -> {
+            while (true) {
+                Socket socket = null;
+                try {
+                    // Accepts the connection if there is one present
+                    socket = serverSocket.accept();
+                    onAccept(socket);
+                } catch (IOException | InterruptedException | ClassNotFoundException e) {
+                    log.error("There was some error in the connection! Waiting for another Connection! " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
+        Listener.setName("Listener - Thread");
+        Listener.start();
+
     }
-    public String Scrape(String query) {
+
+    public static void onAccept(Socket socket) throws InterruptedException, IOException, ClassNotFoundException {
+
+        Thread.sleep(100);
+
+        ObjectInputStream objinput = new ObjectInputStream(socket.getInputStream());
+        ObjectOutputStream objoutput = new ObjectOutputStream(socket.getOutputStream());
+
+        log.info("Connected Bot: " + objinput.readObject().toString());
+        objoutput.writeObject("Connected");
+
+        while(true){
+            String query = objinput.readObject().toString();
+            objoutput.writeObject(Scrape(query));
+        }
+    }
+
+
+    public static String Scrape(String query) {
 
         String url ="https://google.com/search?q=" + query;
         driver.get(url);
@@ -62,5 +104,14 @@ public class GoogleScrape {
         }catch (Exception ignored){}
         //driver.close();
         return haha;
+    }
+
+    public void socketInitializer(int portNumber) {
+        try{
+            serverSocket = new ServerSocket(portNumber);
+            log.info("Successfully created a Server Socket at port " + serverSocket.getLocalPort() + " with a timeout of " + serverSocket.getSoTimeout());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+}
+
+group 'org.yuicchi'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+
+    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.0.0-alpha-6'
+    implementation 'ch.qos.logback:logback-classic:1.4.4'
+
+}
+
+test {
+    useJUnitPlatform()
+}
