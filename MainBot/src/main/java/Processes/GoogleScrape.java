@@ -27,7 +27,7 @@ public class GoogleScrape {
         }
     }
 
-    public static void connectServer() throws IOException, ClassNotFoundException, InterruptedException{
+    public static void connectServer() throws IOException, ClassNotFoundException{
 
         socket = new Socket("localhost", 50000);
 
