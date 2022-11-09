@@ -1,8 +1,10 @@
 package Processes;
 
+import Main.Startup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.print.attribute.standard.OrientationRequested;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -17,7 +19,8 @@ public class GoogleScrape {
 
     private static final Logger log = LoggerFactory.getLogger(GoogleScrape.class);
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+
         connectServer();
 
         Scanner scanner = new Scanner(System.in);
@@ -25,7 +28,10 @@ public class GoogleScrape {
         while (true){
             System.out.println(StartSearch(scanner.nextLine()));
         }
+
     }
+
+
 
     public static void connectServer() throws IOException, ClassNotFoundException{
 
