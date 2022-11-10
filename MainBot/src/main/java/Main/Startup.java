@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 
 public class Startup {
@@ -22,12 +23,11 @@ public class Startup {
         try{
 
             //GoogleScrape.connectServer();
-
-            //Main.Startup.getArduino();
+            Main.Startup.getArduino();
             // Wait 5 seconds for initialization
-            // Thread.sleep(5 * 1000);
+             Thread.sleep(5 * 1000);
 
-            //log.info("Connection With arduino: " + (Main.Startup.connectArduino()?"Successful":"Failed"));
+            log.info("Connection With arduino: " + (Main.Startup.connectArduino()?"Successful":"Failed"));
             log.info("Starting Up Server Socket");
             serverInit();
 
@@ -35,9 +35,13 @@ public class Startup {
             Idle_Animations idle_animations = new Idle_Animations();
             idle_animations.doIdle();
 
-           new Thread(()->{
+            //Process process = new ProcessBuilder("/usr/bin/python", "-m", "/home/pi/Wall-E/FaceRecog.py", "/home/pi/Wall-E/cascade.xml").start();
+            //log.info("Python Process " + process.isAlive());
+            //log.info(new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
+
+            new Thread(()->{
                 try {
-                    Thread.sleep(10000000);
+                    Thread.sleep(1000000000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -50,7 +54,7 @@ public class Startup {
 
     static void getArduino() {
 
-        int BaudRate = 9600;
+        int BaudRate = 19200;
         int DataBits = 8;
         int StopBits = SerialPort.ONE_STOP_BIT;
         int Parity = SerialPort.NO_PARITY;
@@ -66,6 +70,7 @@ public class Startup {
                 log.info(String.valueOf(port.getDescriptivePortName()));
 
                 port.setComPortParameters(BaudRate, DataBits, StopBits, Parity);
+                log.info(port.getBaudRate() + " " + port.getDescriptivePortName() + " " + port.getPortDescription() + " " + port.getPortLocation());
                 port.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING,1000,0);
                 if(port.openPort()){
                     log.info("Opened!");
@@ -178,26 +183,28 @@ public class Startup {
             int y = Integer.parseInt(Values.split(":")[1]);
             long time = System.currentTimeMillis();
             // face is too low, move down
-
+            Thread.sleep(500);
             // TODO MESS WITH THESE VALUES, same goes for the arduino side
 
             if(y > 280){
-                if(System.currentTimeMillis()-time>100)
-                    continue;
+                //if(System.currentTimeMillis()-time>100)
+                //    continue;
 
                 log.info("Down");
 
-                //writeMessage("Neck");
-                //writeMessage("-2");
+                writeMessage("Neck");
+                Thread.sleep(10);
+                writeMessage("-10");
             }
             if(y < 120){
-                if(System.currentTimeMillis()-time>100)
-                    continue;
+                //if(System.currentTimeMillis()-time>100)
+                //    continue;
 
                 log.info("Up");
 
-                //writeMessage("Neck");
-                //writeMessage("2");
+                writeMessage("Neck");
+                Thread.sleep(10);
+                writeMessage("10");
             }
 
             // Max right deflection will be 400
@@ -206,12 +213,14 @@ public class Startup {
             // 275 -> 50
             // 320 -> 255
             if(x > 210){
-                if(System.currentTimeMillis()-time>100)
-                    continue;
+                log.info("fuck--------------------------------");
+
+
 
                 log.info("Right " + (x-210));
-                //writeMessage("Right");
-                //writeMessage(String.valueOf(x-220));
+                writeMessage("Right");
+                Thread.sleep(10);
+                writeMessage(String.valueOf(x-220));
             }
 
             // Max right deflection will be 50
@@ -221,17 +230,16 @@ public class Startup {
             // 115 -> 50
             // 70 -> 255
             if(x < 180){
-                if(System.currentTimeMillis()-time>100)
-                    continue;
+                log.info("fuck--------------------------------");
 
                 log.info("Left " + (x-180));
-
-               //writeMessage(String.valueOf(x-180));
-                //writeMessage("Left");
+                writeMessage("Left");
+                Thread.sleep(10);
+                writeMessage(String.valueOf(x-180));//writeMessage("Left");
             }
 
-            log.info(Values);
-            //Thread.sleep(1000);
+            //log.info(Values);
+            ////Thread.sleep(1000);
         }
 
 

@@ -14,12 +14,12 @@ shadowJar {
     zip64 true
 }
 
-mainClassName = "MainBot.Startup"
+mainClassName = "Main.Startup"
 
 jar {
     manifest {
         attributes(
-                'Main-Class' : 'Startup'
+                'Main-Class' : 'Main.Startup'
         )
     }
 }
