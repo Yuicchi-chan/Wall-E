@@ -162,7 +162,13 @@ public class Startup {
 
         }
         if(Message.equals("Voice")){
-            Thread voiceRecog = new Thread(()-> VoiceHandler(socket));
+            Thread voiceRecog = new Thread(()-> {
+                try {
+                    VoiceHandler(socket);
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
             voiceRecog.setName("Voice recognition");
             voiceRecog.start();
         }
@@ -194,7 +200,7 @@ public class Startup {
 
                 writeMessage("Neck");
                 Thread.sleep(10);
-                writeMessage("-10");
+                writeMessage("-5");
             }
             if(y < 120){
                 //if(System.currentTimeMillis()-time>100)
@@ -204,7 +210,7 @@ public class Startup {
 
                 writeMessage("Neck");
                 Thread.sleep(10);
-                writeMessage("10");
+                writeMessage("5");
             }
 
             // Max right deflection will be 400
@@ -213,8 +219,6 @@ public class Startup {
             // 275 -> 50
             // 320 -> 255
             if(x > 210){
-                log.info("fuck--------------------------------");
-
 
 
                 log.info("Right " + (x-210));
@@ -230,7 +234,6 @@ public class Startup {
             // 115 -> 50
             // 70 -> 255
             if(x < 180){
-                log.info("fuck--------------------------------");
 
                 log.info("Left " + (x-180));
                 writeMessage("Left");
@@ -244,7 +247,34 @@ public class Startup {
 
 
     }
-    public static void VoiceHandler(Socket socket){
+    public static void VoiceHandler(Socket socket) throws IOException, InterruptedException {
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        String Message = in.readLine();
 
+        log.info("Connected: " + Message);
+        Message = Message.toLowerCase();
+        while (true){
+
+            if(Message.contains("turn left")){
+                writeMessage("TurnL");
+                Thread.sleep(10);
+            }
+            if(Message.contains("turn right")){
+                writeMessage("TurnR");
+                Thread.sleep(10);
+            }
+            if(Message.contains("move forward")){
+                writeMessage("moveF");
+                Thread.sleep(10);
+            }
+            if(Message.contains("move backward")){
+                writeMessage("moveB");
+                Thread.sleep(10);
+            }
+
+            if(Message.contains("search")){
+
+            }
+        }
     }
 }
