@@ -32,6 +32,7 @@ dependencies {
     implementation 'com.fazecast:jSerialComm:2.9.2'
     implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.0.0-alpha-6'
     implementation 'ch.qos.logback:logback-classic:1.4.4'
+    implementation group: 'net.sf.sociaal', name: 'freetts', version: '1.2.2'
 
 }
 

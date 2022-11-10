@@ -1,6 +1,5 @@
 package Main;
 
-import Processes.GoogleScrape;
 import com.fazecast.jSerialComm.SerialPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +8,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import javax.speech.Central;
 
 
 public class Startup {
@@ -18,11 +17,20 @@ public class Startup {
     private static SerialPort port = null;
     private static ServerSocket serverSocket;
     public static boolean isIdle = false;
+    static VoiceParser parser;
 
     public static void main(String[] args) {
         try{
 
-            //GoogleScrape.connectServer();
+            System.setProperty(
+                    "freetts.voices",
+                    "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory");
+            // Register Engine
+            Central.registerEngineCentral(
+                    "com.sun.speech.freetts.jsapi.FreeTTSEngineCentral");
+
+            parser = new VoiceParser();
+            GoogleScrape.connectServer();
             Main.Startup.getArduino();
             // Wait 5 seconds for initialization
              Thread.sleep(5 * 1000);
@@ -273,6 +281,18 @@ public class Startup {
             }
 
             if(Message.contains("search")){
+
+                String query = Message.split("search")[1];
+                if(query.split(" ")[0].equals("for")){
+                    query = query.substring(4);
+                }
+
+                try{
+                    query = GoogleScrape.startSearch(query);
+                    parser.saySomething(query);
+                }catch (ClassNotFoundException e){
+                    log.error(e.getMessage());
+                }
 
             }
         }
