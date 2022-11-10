@@ -6,7 +6,7 @@ import socket
 cascPath = sys.argv[1]
 faceCascade = cv2.CascadeClassifier(cascPath)
 
-HOST = "192.168.1.17"
+HOST = "localhost"
 PORT = 25555
 
 socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
