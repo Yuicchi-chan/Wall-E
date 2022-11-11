@@ -29,11 +29,12 @@ public class VoiceParser {
     SourceDataLine sourceDataline = null;
 
 
-    void playAudio(){
+    void playAudio(File file){
+
         try{
-            File song = new File("ysd");
-            byte[] songByte = Files.readAllBytes(song.toPath());
+            byte[] songByte = Files.readAllBytes(file.toPath());
             songByte = Arrays.copyOfRange(songByte, 44, songByte.length); // Cutting the header off the file to play the audio directly
+
             sourceDataline.open();  // OPEN THE LINE
             sourceDataline.start(); // START THE LINE
             sourceDataline.write(songByte, 0, songByte.length); // Write the data to the line
@@ -56,8 +57,9 @@ public class VoiceParser {
 
                 System.out.println(m.getName() + " " + m.getDescription());
 
-                if (m.getName().contains("Headphones") && !m.getName().contains("Port")) {
+                if ((m.getName().contains("Headphones") && !m.getName().contains("Port"))) {
                     mixer = m;
+                    System.out.println((mixer.getName()));
                     break;
                 }
             }

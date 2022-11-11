@@ -33,7 +33,7 @@ public class GoogleScrape {
 
     public static void connectServer() throws IOException, ClassNotFoundException{
 
-        socket = new Socket("localhost", 50000);
+        socket = new Socket("yuicchi.ddns.net", 61234);
 
         outputStream = new ObjectOutputStream(socket.getOutputStream());
         outputStream.writeObject("Wall-E");

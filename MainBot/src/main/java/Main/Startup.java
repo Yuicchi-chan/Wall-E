@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 import javax.speech.Central;
 
 
@@ -30,30 +31,30 @@ public class Startup {
                     "com.sun.speech.freetts.jsapi.FreeTTSEngineCentral");
 
             parser = new VoiceParser();
+            log.info("Initializing");
             GoogleScrape.connectServer();
-            Main.Startup.getArduino();
+            //Main.Startup.getArduino();
             // Wait 5 seconds for initialization
              Thread.sleep(5 * 1000);
 
-            log.info("Connection With arduino: " + (Main.Startup.connectArduino()?"Successful":"Failed"));
+            //log.info("Connection With arduino: " + (Main.Startup.connectArduino()?"Successful":"Failed"));
             log.info("Starting Up Server Socket");
             serverInit();
 
             isIdle = true;
             Idle_Animations idle_animations = new Idle_Animations();
             idle_animations.doIdle();
+            parser.setupAudio();
+            parser.playAudio(new File("/home/pi/Wall-E/startup.wav"));
+            Scanner sc = new Scanner(System.in);
+            while(true){
+                writeMessage(sc.nextLine());
+            }
 
             //Process process = new ProcessBuilder("/usr/bin/python", "-m", "/home/pi/Wall-E/FaceRecog.py", "/home/pi/Wall-E/cascade.xml").start();
             //log.info("Python Process " + process.isAlive());
             //log.info(new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
 
-            new Thread(()->{
-                try {
-                    Thread.sleep(1000000000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }).start();
         }catch (Exception e){
             log.error(e.getMessage());
         }
@@ -199,6 +200,7 @@ public class Startup {
             // face is too low, move down
             Thread.sleep(500);
             // TODO MESS WITH THESE VALUES, same goes for the arduino side
+            log.info(Values);
 
             if(y > 280){
                 //if(System.currentTimeMillis()-time>100)
@@ -207,8 +209,8 @@ public class Startup {
                 log.info("Down");
 
                 writeMessage("Neck");
-                Thread.sleep(10);
-                writeMessage("-5");
+                Thread.sleep(50);
+                writeMessage("-10");
             }
             if(y < 120){
                 //if(System.currentTimeMillis()-time>100)
@@ -217,8 +219,8 @@ public class Startup {
                 log.info("Up");
 
                 writeMessage("Neck");
-                Thread.sleep(10);
-                writeMessage("5");
+                Thread.sleep(50);
+                writeMessage("10");
             }
 
             // Max right deflection will be 400
@@ -231,7 +233,7 @@ public class Startup {
 
                 log.info("Right " + (x-210));
                 writeMessage("Right");
-                Thread.sleep(10);
+                Thread.sleep(50);
                 writeMessage(String.valueOf(x-220));
             }
 
@@ -245,7 +247,7 @@ public class Startup {
 
                 log.info("Left " + (x-180));
                 writeMessage("Left");
-                Thread.sleep(10);
+                Thread.sleep(50);
                 writeMessage(String.valueOf(x-180));//writeMessage("Left");
             }
 
@@ -265,19 +267,19 @@ public class Startup {
 
             if(Message.contains("turn left")){
                 writeMessage("TurnL");
-                Thread.sleep(10);
+                Thread.sleep(50);
             }
             if(Message.contains("turn right")){
                 writeMessage("TurnR");
-                Thread.sleep(10);
+                Thread.sleep(50);
             }
             if(Message.contains("move forward")){
                 writeMessage("moveF");
-                Thread.sleep(10);
+                Thread.sleep(50);
             }
             if(Message.contains("move backward")){
                 writeMessage("moveB");
-                Thread.sleep(10);
+                Thread.sleep(50);
             }
 
             if(Message.contains("search")){
